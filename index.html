@@ -3,32 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swish QR-kodsgenerator</title>
+    <title>BIK Karlskoga - Café Kassa & Swish QR</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
         }
         
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            color: #1a1a1a;
+        .header {
             text-align: center;
+            color: white;
             margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .section h2 {
+            margin: 0 0 20px 0;
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 10px;
+        }
+        
+        /* KASSASYSTEM */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .menu-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        
+        .menu-item:hover, .menu-item:active {
+            background: #2a5298;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(42, 82, 152, 0.3);
+        }
+        
+        .menu-item .name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .menu-item .price {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .menu-item:hover .price, .menu-item:active .price {
+            color: white;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-item .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .total {
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            color: #1e3c72;
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            touch-action: manipulation;
+            user-select: none;
+        }
+        
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #218838;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        /* QR-SEKTION */
+        .qr-form {
+            margin-bottom: 20px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         label {
@@ -42,110 +224,33 @@
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
-            box-sizing: border-box;
         }
         
-        input[type="text"]:focus, input[type="number"]:focus {
-            border-color: #4CAF50;
-            outline: none;
+        input[readonly] {
+            background-color: #f0f0f0;
         }
         
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        button {
-            flex: 1;
-            padding: 12px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            /* Förbättrat för touchskärmar */
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        
-        .generate-btn {
-            background-color: #4CAF50;
-            color: white;
-        }
-        
-        .generate-btn:hover {
-            background-color: #45a049;
-        }
-        
-        .clear-btn {
-            background-color: #f44336;
-            color: white;
-        }
-        
-        .clear-btn:hover {
-            background-color: #da190b;
-        }
-        
-        .qr-container {
+        .qr-result {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 20px;
             border: 2px dashed #ddd;
             border-radius: 10px;
             background-color: #fafafa;
-        }
-        
-        #qrcode {
-            display: inline-block;
-            margin: 20px 0;
-        }
-        
-        .download-btn {
-            background-color: #2196F3;
-            color: white;
-            margin-top: 15px;
             display: none;
         }
         
-        .download-btn:hover {
-            background-color: #1976D2;
-        }
-        
-        .info {
-            background-color: #e3f2fd;
-            padding: 15px;
-            border-left: 4px solid #2196F3;
-            margin-bottom: 20px;
-            border-radius: 0 5px 5px 0;
-        }
-        
-        .example {
-            background-color: #f1f8e9;
-            padding: 15px;
-            border-left: 4px solid #4CAF50;
-            margin-top: 20px;
-            border-radius: 0 5px 5px 0;
-        }
-        
-        .swish-data {
-            background-color: #fff3e0;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 15px;
-            font-family: monospace;
-            word-break: break-all;
-            font-size: 14px;
+        #qrcode {
+            margin: 20px 0;
         }
         
         .status {
-            margin-top: 10px;
+            margin: 10px 0;
             padding: 10px;
             border-radius: 5px;
+            text-align: center;
             display: none;
         }
         
@@ -160,157 +265,243 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        
+        .swish-data {
+            background-color: #fff3e0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🏪 Swish QR-kodsgenerator för Servering</h1>
-        
-        <div class="info">
-            <strong>Servering - QR-kodsgenerator:</strong> Swish-numret 1234701777 är förinställt. Fyll bara i beloppet och eventuellt meddelande för att snabbt generera QR-koder för dina kunder.
+    <div class="header">
+        <img src="https://sportality.cdn.s8y.se/team-logos/bik1_bik.svg" alt="BIK Karlskoga" class="logo">
+        <h1>BIK Karlskoga</h1>
+        <p>Café Kassa & Swish Betalning</p>
+    </div>
+
+    <div class="main-container">
+        <!-- KASSASYSTEM -->
+        <div class="section">
+            <h2>🛒 Kassasystem</h2>
+            
+            <div class="menu-grid">
+                <div class="menu-item" onclick="addToOrder('Kaffe', 25)">
+                    <div class="name">Kaffe</div>
+                    <div class="price">25 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Te', 20)">
+                    <div class="name">Te</div>
+                    <div class="price">20 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Läsk', 30)">
+                    <div class="name">Läsk</div>
+                    <div class="price">30 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Vatten', 15)">
+                    <div class="name">Vatten</div>
+                    <div class="price">15 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Smörgås', 45)">
+                    <div class="name">Smörgås</div>
+                    <div class="price">45 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Varmkorv', 35)">
+                    <div class="name">Varmkorv</div>
+                    <div class="price">35 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Hamburgare', 65)">
+                    <div class="name">Hamburgare</div>
+                    <div class="price">65 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Chips', 20)">
+                    <div class="name">Chips</div>
+                    <div class="price">20 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Glass', 25)">
+                    <div class="name">Glass</div>
+                    <div class="price">25 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Kaka', 30)">
+                    <div class="name">Kaka</div>
+                    <div class="price">30 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Godis', 15)">
+                    <div class="name">Godis</div>
+                    <div class="price">15 kr</div>
+                </div>
+                <div class="menu-item" onclick="addToOrder('Öl (alkoholfri)', 35)">
+                    <div class="name">Öl (alkoholfri)</div>
+                    <div class="price">35 kr</div>
+                </div>
+            </div>
+            
+            <div class="order-summary" id="orderSummary">
+                <p style="text-align: center; color: #6c757d;">Ingen beställning ännu...</p>
+            </div>
+            
+            <div class="total" id="totalAmount">Totalt: 0 kr</div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="transferToQR()">💳 Skapa Swish QR</button>
+                <button class="btn btn-danger" onclick="clearOrder()">🗑️ Rensa allt</button>
+            </div>
         </div>
-        
-        <form id="qrForm">
-            <div class="form-group">
-                <label for="swishNumber">Swish-nummer:</label>
-                <input type="text" id="swishNumber" value="1234701777" readonly style="background-color: #f0f0f0;">
-                <small style="color: #666;">Numret är låst för denna servering</small>
+
+        <!-- QR-KODSGENERATOR -->
+        <div class="section">
+            <h2>📱 Swish QR-kod</h2>
+            
+            <div class="qr-form">
+                <div class="form-group">
+                    <label for="swishNumber">Swish-nummer:</label>
+                    <input type="text" id="swishNumber" value="1234701777" readonly>
+                    <small style="color: #666;">BIK Karlskoga café</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Belopp (SEK):</label>
+                    <input type="number" id="amount" step="0.01" min="0" placeholder="Fylls i automatiskt från kassan">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Meddelande:</label>
+                    <input type="text" id="message" placeholder="t.ex. Bord 12 - BIK Karlskoga" maxlength="70">
+                </div>
+                
+                <button class="btn btn-primary" onclick="generateQR()" style="width: 100%;">
+                    🔄 Generera QR-kod
+                </button>
             </div>
             
-            <div class="form-group">
-                <label for="amount">Belopp (SEK):</label>
-                <input type="number" id="amount" step="0.01" min="0" placeholder="t.ex. 125.50" required>
-            </div>
+            <div class="status" id="statusMsg"></div>
             
-            <div class="form-group">
-                <label for="message">Meddelande (frivilligt):</label>
-                <input type="text" id="message" placeholder="t.ex. Bord 12, Kaffe och macka" maxlength="70">
+            <div class="qr-result" id="qrContainer">
+                <h3>Swish QR-kod:</h3>
+                <div id="qrcode"></div>
+                <div class="swish-data" id="swishData"></div>
+                <button class="btn btn-secondary" onclick="downloadQR()" style="margin-top: 15px;">
+                    📥 Ladda ner QR-kod
+                </button>
             </div>
-            
-            <div class="button-group">
-                <button type="submit" class="generate-btn">🔄 Generera QR-kod</button>
-                <button type="button" class="clear-btn" onclick="clearForm()">🗑️ Rensa belopp & meddelande</button>
-            </div>
-        </form>
-        
-        <div class="status" id="statusMsg"></div>
-        
-        <div class="qr-container" id="qrContainer" style="display: none;">
-            <h3>Din Swish QR-kod:</h3>
-            <div id="qrcode"></div>
-            <div class="swish-data" id="swishData"></div>
-            <button class="download-btn" id="downloadBtn" onclick="downloadQR()">📥 Ladda ner QR-kod</button>
-        </div>
-        
-        <div class="example">
-            <strong>Tips för serveringar:</strong>
-            <ul>
-                <li>Ange bara beloppet - Swish-numret är redan inställt</li>
-                <li>Använd meddelande-fältet för bord-nummer eller beställning</li>
-                <li>Skriv ut QR-koderna eller visa dem på en skärm/surfplatta</li>
-                <li>Tryck Enter i belopp-fältet för snabb generering</li>
-            </ul>
         </div>
     </div>
 
     <script>
+        let currentOrder = [];
         let qrCodeInstance = null;
         
-        function showStatus(message, type = 'success') {
-            const statusEl = document.getElementById('statusMsg');
-            statusEl.textContent = message;
-            statusEl.className = `status ${type}`;
-            statusEl.style.display = 'block';
-            
-            setTimeout(() => {
-                statusEl.style.display = 'none';
-            }, 3000);
+        function addToOrder(name, price) {
+            currentOrder.push({name, price});
+            updateOrderDisplay();
+            showStatus(`${name} tillagd!`, 'success');
         }
-
-        // Spara och hämta Swish-nummer
-        window.onload = function() {
-            showStatus('Redo att generera QR-koder för 1234701777!', 'success');
-            document.getElementById('amount').focus(); // Fokusera på belopp-fältet
-        };
-
-        document.getElementById('qrForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            generateQR();
-        });
         
-        // Extra eventlyssnare för knappen (för touchskärmar)
-        document.querySelector('.generate-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            generateQR();
-        });
+        function removeFromOrder(index) {
+            const removed = currentOrder.splice(index, 1)[0];
+            updateOrderDisplay();
+            showStatus(`${removed.name} borttagen!`, 'success');
+        }
         
-        // Touch-hantering för mobila enheter
-        document.querySelector('.generate-btn').addEventListener('touchend', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            generateQR();
-        });
+        function updateOrderDisplay() {
+            const orderSummary = document.getElementById('orderSummary');
+            const totalElement = document.getElementById('totalAmount');
+            
+            if (currentOrder.length === 0) {
+                orderSummary.innerHTML = '<p style="text-align: center; color: #6c757d;">Ingen beställning ännu...</p>';
+                totalElement.textContent = 'Totalt: 0 kr';
+                return;
+            }
+            
+            let html = '';
+            let total = 0;
+            
+            currentOrder.forEach((item, index) => {
+                html += `
+                    <div class="order-item">
+                        <span>${item.name}</span>
+                        <span>
+                            ${item.price} kr
+                            <button class="remove-btn" onclick="removeFromOrder(${index})">×</button>
+                        </span>
+                    </div>
+                `;
+                total += item.price;
+            });
+            
+            orderSummary.innerHTML = html;
+            totalElement.textContent = `Totalt: ${total} kr`;
+        }
+        
+        function clearOrder() {
+            currentOrder = [];
+            updateOrderDisplay();
+            document.getElementById('amount').value = '';
+            document.getElementById('qrContainer').style.display = 'none';
+            showStatus('Beställning rensad!', 'success');
+        }
+        
+        function transferToQR() {
+            const total = currentOrder.reduce((sum, item) => sum + item.price, 0);
+            
+            if (total === 0) {
+                showStatus('Lägg till produkter i beställningen först!', 'error');
+                return;
+            }
+            
+            document.getElementById('amount').value = total;
+            
+            // Skapa automatiskt meddelande baserat på beställning
+            const orderText = currentOrder.map(item => item.name).join(', ');
+            const message = `BIK Karlskoga - ${orderText}`;
+            document.getElementById('message').value = message.substring(0, 70); // Max 70 tecken
+            
+            showStatus(`Belopp ${total} kr överfört till QR-generator!`, 'success');
+            
+            // Scrolla till QR-sektionen på mobil
+            if (window.innerWidth <= 768) {
+                document.querySelector('.section:last-child').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
         
         function generateQR() {
-            const swishNumber = '1234701777'; // Fast nummer för denna servering
+            const swishNumber = '1234701777';
             const amount = document.getElementById('amount').value.trim();
             const message = document.getElementById('message').value.trim();
             
-            if (!amount) {
-                showStatus('Belopp är obligatoriskt!', 'error');
-                document.getElementById('amount').focus();
+            if (!amount || amount <= 0) {
+                showStatus('Ange ett giltigt belopp!', 'error');
                 return;
             }
             
             try {
-                // Formatera beloppet enligt Swish-specifikation
                 const formattedAmount = parseFloat(amount).toFixed(2).replace('.', ',');
-                
-                // URL-enkoda meddelandet
                 const encodedMessage = message ? encodeURIComponent(message) : '';
-                
-                // Skapa Swish-strängen enligt specifikation: C<payee>;<amount>;<message>;<lock_mask>
                 const swishString = `C${swishNumber};${formattedAmount};${encodedMessage};0`;
                 
-                // Visa Swish-data
                 document.getElementById('swishData').innerHTML = `
                     <strong>Swish-data:</strong><br>
-                    ${swishString}<br><br>
-                    <strong>Förklaring:</strong><br>
-                    • C = Swish Consumer-to-Business format<br>
-                    • ${swishNumber} = Mottagarens Swish-nummer<br>
-                    • ${formattedAmount} SEK = Belopp<br>
-                    ${message ? `• "${message}" = Meddelande<br>` : ''}
-                    • 0 = Låst (användaren kan inte ändra)
+                    ${swishString}
                 `;
                 
-                // Rensa tidigare QR-kod
                 const qrContainer = document.getElementById('qrcode');
                 qrContainer.innerHTML = '';
                 
-                // Skapa ny QR-kod med QRCode.js
                 qrCodeInstance = new QRCode(qrContainer, {
                     text: swishString,
-                    width: 300,
-                    height: 300,
+                    width: 250,
+                    height: 250,
                     colorDark: '#000000',
                     colorLight: '#ffffff',
                     correctLevel: QRCode.CorrectLevel.H
                 });
                 
-                // Visa resultat
                 document.getElementById('qrContainer').style.display = 'block';
-                document.getElementById('downloadBtn').style.display = 'inline-block';
-                
                 showStatus(`✅ QR-kod för ${formattedAmount} SEK genererad!`, 'success');
-                
-                // Scrolla till resultatet
-                document.getElementById('qrContainer').scrollIntoView({ 
-                    behavior: 'smooth' 
-                });
-                
-                console.log('QR-kod skapad för:', swishString);
                 
             } catch (error) {
                 console.error('Fel:', error);
@@ -318,35 +509,12 @@
             }
         }
         
-        function clearForm() {
-            document.getElementById('amount').value = '';
-            document.getElementById('message').value = '';
-            document.getElementById('qrContainer').style.display = 'none';
-            document.getElementById('amount').focus();
-            showStatus('Formulär rensat!', 'success');
-        }
-        
-        // Extra eventlyssnare för rensa-knappen (för touchskärmar)
-        document.querySelector('.clear-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            clearForm();
-        });
-        
-        document.querySelector('.clear-btn').addEventListener('touchend', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            clearForm();
-        });
-        
         function downloadQR() {
             try {
-                // QRCode.js skapar både canvas och img element
                 const canvas = document.querySelector('#qrcode canvas');
                 const img = document.querySelector('#qrcode img');
                 
                 let dataUrl = '';
-                
                 if (canvas) {
                     dataUrl = canvas.toDataURL('image/png');
                 } else if (img) {
@@ -358,19 +526,39 @@
                 
                 const link = document.createElement('a');
                 const timestamp = new Date().toISOString().slice(0,16).replace(/[:.]/g, '-');
-                link.download = `swish-qr-${timestamp}.png`;
+                link.download = `bik-karlskoga-swish-${timestamp}.png`;
                 link.href = dataUrl;
                 link.click();
                 
                 showStatus('📥 QR-kod nedladdad!', 'success');
                 
             } catch (error) {
-                console.error('Nedladdningsfel:', error);
                 showStatus('❌ Fel vid nedladdning: ' + error.message, 'error');
             }
         }
         
-        // Enter-snabbknappar
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMsg');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+            
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Touch-hantering för knappar
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                });
+            });
+        });
+        
+        // Enter-tangent i belopp-fält
         document.getElementById('amount').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') generateQR();
         });
@@ -378,6 +566,11 @@
         document.getElementById('message').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') generateQR();
         });
+        
+        // Startstatus
+        window.onload = function() {
+            showStatus('🏟️ BIK Karlskoga kassasystem redo!', 'success');
+        };
     </script>
 </body>
 </html>
