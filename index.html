@@ -2,6 +2,987 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BIK Karlskoga - Café Kassa & Swish QR</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+        }
+        
+        @media (min-width: 769px) {
+            body {
+                padding: 20px;
+            }
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 1em;
+            opacity: 0.9;
+        }
+        
+        @media (min-width: 769px) {
+            .header {
+                margin-bottom: 30px;
+            }
+            
+            .header .logo {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .header p {
+                font-size: 1.2em;
+            }
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        @media (min-width: 769px) {
+            .main-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+        }
+        
+        .section {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .section h2 {
+            margin: 0 0 15px 0;
+            color: #1e3c72;
+            border-bottom: 3px solid #2a5298;
+            padding-bottom: 8px;
+            font-size: 1.3em;
+        }
+        
+        @media (min-width: 769px) {
+            .section {
+                padding: 25px;
+            }
+            
+            .section h2 {
+                margin: 0 0 20px 0;
+                padding-bottom: 10px;
+                font-size: 1.5em;
+            }
+        }
+        
+        /* KASSASYSTEM */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        @media (min-width: 480px) {
+            .menu-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .menu-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                margin-bottom: 20px;
+            }
+        }
+        
+        .menu-item {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            user-select: none;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        @media (min-width: 769px) {
+            .menu-item {
+                padding: 15px 10px;
+                min-height: auto;
+            }
+        }
+        
+        .menu-item:active {
+            background: #2a5298 !important;
+            color: white !important;
+            transform: scale(0.95);
+        }
+        
+        .menu-item .name {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+        
+        .menu-item .price {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        @media (min-width: 769px) {
+            .menu-item .name {
+                font-size: 14px;
+                margin-bottom: 5px;
+            }
+            
+            .menu-item .price {
+                font-size: 16px;
+            }
+        }
+        
+        .menu-item:active .price {
+            color: white !important;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        @media (min-width: 769px) {
+            .order-summary {
+                padding: 15px;
+                margin: 20px 0;
+                max-height: 300px;
+            }
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 14px;
+        }
+        
+        @media (min-width: 769px) {
+            .order-item {
+                padding: 8px 0;
+                font-size: 16px;
+            }
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-item .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 30px;
+            min-height: 30px;
+        }
+        
+        .total {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            color: #1e3c72;
+            background: #e7f3ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+        
+        @media (min-width: 769px) {
+            .total {
+                font-size: 1.4em;
+                padding: 15px;
+                margin: 15px 0;
+            }
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        @media (min-width: 480px) {
+            .action-buttons {
+                flex-direction: row;
+                gap: 10px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .action-buttons {
+                margin-top: 15px;
+            }
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            user-select: none;
+            min-height: 45px;
+            font-weight: 600;
+        }
+        
+        @media (min-width: 769px) {
+            .btn {
+                padding: 15px 20px;
+                font-size: 16px;
+                min-height: 50px;
+            }
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-primary {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-blue {
+            background: #007bff;
+            color: white;
+        }
+        
+        /* QR-SEKTION */
+        .qr-form {
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        @media (min-width: 769px) {
+            .qr-form {
+                margin-bottom: 20px;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
+            }
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        @media (min-width: 769px) {
+            label {
+                margin-bottom: 5px;
+                font-size: 16px;
+            }
+        }
+        
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            min-height: 45px;
+        }
+        
+        @media (min-width: 769px) {
+            input[type="text"], input[type="number"] {
+                padding: 15px;
+                min-height: 50px;
+            }
+        }
+        
+        input[readonly] {
+            background-color: #f0f0f0;
+        }
+        
+        .qr-result {
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            background-color: #fafafa;
+            display: none;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        @media (min-width: 769px) {
+            .qr-result {
+                margin-top: 20px;
+                padding: 20px;
+            }
+        }
+        
+        .qr-image {
+            max-width: 100%;
+            height: auto;
+            width: auto;
+            max-height: 250px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 15px auto;
+            display: block;
+        }
+        
+        @media (min-width: 769px) {
+            .qr-image {
+                max-height: 300px;
+                margin: 20px auto;
+            }
+        }
+        
+        #qrcode {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .status {
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            font-size: 14px;
+        }
+        
+        @media (min-width: 769px) {
+            .status {
+                margin: 10px 0;
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .swish-data {
+            background-color: #fff3e0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-family: monospace;
+            font-size: 11px;
+            word-break: break-all;
+            text-align: left;
+        }
+        
+        @media (min-width: 769px) {
+            .swish-data {
+                padding: 15px;
+                margin-top: 15px;
+                font-size: 12px;
+            }
+        }
+        
+        /* FULLSKÄRMS QR-OVERLAY */
+        .qr-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .qr-overlay-content {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .qr-overlay h2 {
+            margin: 0 0 20px 0;
+            color: white;
+            font-size: 1.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        @media (min-width: 769px) {
+            .qr-overlay h2 {
+                font-size: 2em;
+                margin: 0 0 30px 0;
+            }
+        }
+        
+        .qr-overlay-image {
+            max-width: 100%;
+            max-height: 60vh;
+            width: auto;
+            height: auto;
+            border: 3px solid white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: white;
+            padding: 20px;
+        }
+        
+        @media (min-width: 769px) {
+            .qr-overlay-image {
+                max-height: 70vh;
+                padding: 30px;
+            }
+        }
+        
+        .qr-overlay-text {
+            margin-top: 20px;
+            font-size: 1.1em;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        @media (min-width: 769px) {
+            .qr-overlay-text {
+                font-size: 1.3em;
+                margin-top: 30px;
+            }
+        }
+        
+        .qr-overlay-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0,0,0,0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid white;
+        }
+        
+        @media (min-width: 769px) {
+            .qr-overlay-close {
+                font-size: 2.5em;
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://sportality.cdn.s8y.se/team-logos/bik1_bik.svg" alt="BIK Karlskoga" class="logo">
+        <h1>BIK Karlskoga café</h1>
+        <p>Kassa & Swishbetalning</p>
+    </div>
+
+    <div class="main-container">
+        <!-- KASSASYSTEM -->
+        <div class="section">
+            <h2>🛒 Kassasystem</h2>
+            
+            <div class="menu-grid">
+                <div class="menu-item" data-name="Kaffe" data-price="25">
+                    <div class="name">Kaffe</div>
+                    <div class="price">25 kr</div>
+                </div>
+                <div class="menu-item" data-name="Te" data-price="20">
+                    <div class="name">Te</div>
+                    <div class="price">20 kr</div>
+                </div>
+                <div class="menu-item" data-name="Läsk" data-price="30">
+                    <div class="name">Läsk</div>
+                    <div class="price">30 kr</div>
+                </div>
+                <div class="menu-item" data-name="Vatten" data-price="15">
+                    <div class="name">Vatten</div>
+                    <div class="price">15 kr</div>
+                </div>
+                <div class="menu-item" data-name="Smörgås" data-price="45">
+                    <div class="name">Smörgås</div>
+                    <div class="price">45 kr</div>
+                </div>
+                <div class="menu-item" data-name="Varmkorv" data-price="35">
+                    <div class="name">Varmkorv</div>
+                    <div class="price">35 kr</div>
+                </div>
+                <div class="menu-item" data-name="Hamburgare" data-price="65">
+                    <div class="name">Hamburgare</div>
+                    <div class="price">65 kr</div>
+                </div>
+                <div class="menu-item" data-name="Chips" data-price="20">
+                    <div class="name">Chips</div>
+                    <div class="price">20 kr</div>
+                </div>
+                <div class="menu-item" data-name="Glass" data-price="25">
+                    <div class="name">Glass</div>
+                    <div class="price">25 kr</div>
+                </div>
+                <div class="menu-item" data-name="Kaka" data-price="30">
+                    <div class="name">Kaka</div>
+                    <div class="price">30 kr</div>
+                </div>
+                <div class="menu-item" data-name="Godis" data-price="15">
+                    <div class="name">Godis</div>
+                    <div class="price">15 kr</div>
+                </div>
+                <div class="menu-item" data-name="Öl (alkoholfri)" data-price="35">
+                    <div class="name">Öl (alkoholfri)</div>
+                    <div class="price">35 kr</div>
+                </div>
+            </div>
+            
+            <div class="order-summary" id="orderSummary">
+                <p style="text-align: center; color: #6c757d;">Ingen beställning ännu...</p>
+            </div>
+            
+            <div class="total" id="totalAmount">Totalt: 0 kr</div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-blue" id="transferBtn">💳 Skapa Swish QR</button>
+                <button class="btn btn-danger" id="clearBtn">🗑️ Rensa allt</button>
+            </div>
+        </div>
+
+        <!-- QR-KODSGENERATOR -->
+        <div class="section">
+            <h2>📱 Swish QR-kod</h2>
+            
+            <div class="qr-form">
+                <div class="form-group">
+                    <label for="swishNumber">Swish-nummer:</label>
+                    <input type="text" id="swishNumber" value="1234701777" readonly>
+                    <small style="color: #666;">BIK Karlskoga café</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Belopp (SEK):</label>
+                    <input type="number" id="amount" step="0.01" min="0" placeholder="Fylls i från kassan">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Meddelande:</label>
+                    <input type="text" id="message" placeholder="t.ex. Bord 12 - BIK Karlskoga" maxlength="70">
+                </div>
+                
+                <button class="btn btn-primary" id="generateBtn" style="width: 100%;">
+                    🔄 Generera QR-kod
+                </button>
+            </div>
+            
+            <div class="status" id="statusMsg"></div>
+            
+            <div class="qr-result" id="qrContainer">
+                <h3>Swish QR-kod:</h3>
+                <div id="qrcode">
+                    <img id="qrImage" class="qr-image" style="display: none;" alt="Swish QR-kod">
+                </div>
+                <div class="swish-data" id="swishData"></div>
+                <button class="btn btn-secondary" id="downloadBtn" style="margin-top: 15px;">
+                    📱 Visa QR Fullskärm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FULLSKÄRMS QR-OVERLAY -->
+    <div class="qr-overlay" id="qrOverlay">
+        <div class="qr-overlay-close" id="qrOverlayClose">×</div>
+        <div class="qr-overlay-content">
+            <h2>🏒 BIK Karlskoga</h2>
+            <img id="qrOverlayImage" class="qr-overlay-image" alt="Swish QR-kod">
+            <div class="qr-overlay-text">
+                <p><strong>Scanna med Swish-appen</strong></p>
+                <p>Tryck var som helst för att stänga</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variabler
+        let currentOrder = [];
+        
+        // Visa statusmeddelanden
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMsg');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+            
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 4000);
+        }
+        
+        // Lägg till produkt i beställning
+        function addToOrder(name, price) {
+            currentOrder.push({name, price});
+            updateOrderDisplay();
+            showStatus(`${name} tillagd!`, 'success');
+        }
+        
+        // Ta bort produkt från beställning
+        function removeFromOrder(index) {
+            const removed = currentOrder.splice(index, 1)[0];
+            updateOrderDisplay();
+            showStatus(`${removed.name} borttagen!`, 'success');
+        }
+        
+        // Uppdatera beställningsvisning
+        function updateOrderDisplay() {
+            const orderSummary = document.getElementById('orderSummary');
+            const totalElement = document.getElementById('totalAmount');
+            
+            if (currentOrder.length === 0) {
+                orderSummary.innerHTML = '<p style="text-align: center; color: #6c757d;">Ingen beställning ännu...</p>';
+                totalElement.textContent = 'Totalt: 0 kr';
+                return;
+            }
+            
+            let html = '';
+            let total = 0;
+            
+            currentOrder.forEach((item, index) => {
+                html += `
+                    <div class="order-item">
+                        <span>${item.name}</span>
+                        <span>
+                            ${item.price} kr
+                            <button class="remove-btn" data-index="${index}">×</button>
+                        </span>
+                    </div>
+                `;
+                total += item.price;
+            });
+            
+            orderSummary.innerHTML = html;
+            totalElement.textContent = `Totalt: ${total} kr`;
+        }
+        
+        // Rensa beställning
+        function clearOrder() {
+            currentOrder = [];
+            updateOrderDisplay();
+            document.getElementById('amount').value = '';
+            document.getElementById('qrContainer').style.display = 'none';
+            showStatus('Beställning rensad!', 'success');
+        }
+        
+        // Överför till QR-generator
+        function transferToQR() {
+            const total = currentOrder.reduce((sum, item) => sum + item.price, 0);
+            
+            if (total === 0) {
+                showStatus('Lägg till produkter i beställningen först!', 'error');
+                return;
+            }
+            
+            // Sätt beloppet med flera metoder för kompatibilitet
+            const amountField = document.getElementById('amount');
+            amountField.value = total;
+            amountField.setAttribute('value', total);
+            
+            // Trigga events för att säkerställa att värdet registreras
+            amountField.dispatchEvent(new Event('input', { bubbles: true }));
+            amountField.dispatchEvent(new Event('change', { bubbles: true }));
+            
+            // Verifiera att värdet faktiskt sattes
+            setTimeout(() => {
+                if (amountField.value != total) {
+                    amountField.value = total;
+                    console.log('Korrigerade belopp-värde:', total);
+                }
+            }, 100);
+            
+            showStatus(`✅ Belopp ${total} kr överfört till QR-generator!`, 'success');
+            
+            // På mobil - automatisk QR-generering OCH fullskärmsvisning
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    document.querySelector('.section:last-child').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
+                    setTimeout(() => {
+                        // Dubbelkolla att beloppet finns innan QR-generering
+                        const currentAmount = document.getElementById('amount').value;
+                        if (!currentAmount || currentAmount == 0) {
+                            document.getElementById('amount').value = total;
+                        }
+                        generateQR();
+                        // Vänta lite och visa sedan QR i fullskärm automatiskt
+                        setTimeout(() => {
+                            showQRFullscreen();
+                        }, 1500);
+                    }, 800);
+                }, 300);
+            } else {
+                // På desktop - fokusera på meddelande-fältet
+                setTimeout(() => {
+                    document.getElementById('message').focus();
+                }, 300);
+            }
+        }
+        
+        // Generera QR-kod
+        function generateQR() {
+            const swishNumber = '1234701777';
+            const amount = document.getElementById('amount').value.trim();
+            const message = document.getElementById('message').value.trim();
+            
+            if (!amount || amount <= 0) {
+                showStatus('Ange ett giltigt belopp!', 'error');
+                return;
+            }
+            
+            try {
+                const formattedAmount = parseFloat(amount).toFixed(2).replace('.', ',');
+                const encodedMessage = message ? encodeURIComponent(message) : '';
+                const swishString = `C${swishNumber};${formattedAmount};${encodedMessage};0`;
+                
+                // Visa Swish-data
+                document.getElementById('swishData').innerHTML = `
+                    <strong>Swish-data:</strong><br>
+                    ${swishString}
+                `;
+                
+                // Bestäm QR-kod storlek baserat på skärmstorlek
+                const isMobile = window.innerWidth <= 768;
+                const qrSize = isMobile ? 250 : 300;
+                
+                // Skapa QR-kod via extern service
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&format=png&data=${encodeURIComponent(swishString)}`;
+                
+                const qrImage = document.getElementById('qrImage');
+                
+                // Reset image properties för responsivitet
+                qrImage.style.maxWidth = '100%';
+                qrImage.style.height = 'auto';
+                qrImage.style.width = 'auto';
+                qrImage.style.display = 'none';
+                
+                qrImage.onload = function() {
+                    // Säkerställ responsivitet efter laddning
+                    this.style.display = 'block';
+                    this.style.maxWidth = '100%';
+                    this.style.height = 'auto';
+                    this.style.width = 'auto';
+                    
+                    document.getElementById('qrContainer').style.display = 'block';
+                    showStatus(`✅ QR-kod för ${formattedAmount} SEK klar!`, 'success');
+                    
+                    // Força en re-layout för att säkerställa responsivitet
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize'));
+                    }, 100);
+                };
+                
+                qrImage.onerror = function() {
+                    showStatus('❌ Kunde inte skapa QR-kod. Kontrollera internet.', 'error');
+                };
+                
+                qrImage.src = qrApiUrl;
+                
+            } catch (error) {
+                console.error('QR-generering fel:', error);
+                showStatus('❌ Fel vid QR-generering: ' + error.message, 'error');
+            }
+        }
+        
+        // Visa QR-kod i fullskärm
+        function showQRFullscreen() {
+            const qrImage = document.getElementById('qrImage');
+            
+            if (!qrImage.src || qrImage.style.display === 'none') {
+                showStatus('❌ Ingen QR-kod att visa', 'error');
+                return;
+            }
+            
+            // Kopiera QR-bilden till overlay
+            const overlayImage = document.getElementById('qrOverlayImage');
+            overlayImage.src = qrImage.src;
+            
+            // Visa overlay
+            const overlay = document.getElementById('qrOverlay');
+            overlay.style.display = 'flex';
+            
+            // Förhindra scrollning i bakgrunden
+            document.body.style.overflow = 'hidden';
+            
+            showStatus('📱 QR-kod i fullskärm - tryck för att stänga', 'success');
+        }
+        
+        // Stäng QR-fullskärm
+        function closeQRFullscreen() {
+            const overlay = document.getElementById('qrOverlay');
+            overlay.style.display = 'none';
+            
+            // Återställ scrollning
+            document.body.style.overflow = 'auto';
+            
+            showStatus('QR-fullskärm stängd', 'success');
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const name = this.dataset.name;
+                    const price = parseInt(this.dataset.price);
+                    addToOrder(name, price);
+                });
+            });
+            
+            // Remove buttons (delegated event)
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-btn')) {
+                    const index = parseInt(e.target.dataset.index);
+                    removeFromOrder(index);
+                }
+            });
+            
+            // Action buttons
+            document.getElementById('transferBtn').addEventListener('click', transferToQR);
+            document.getElementById('clearBtn').addEventListener('click', clearOrder);
+            document.getElementById('generateBtn').addEventListener('click', generateQR);
+            document.getElementById('downloadBtn').addEventListener('click', showQRFullscreen);
+            
+            // QR-overlay event listeners
+            document.getElementById('qrOverlay').addEventListener('click', closeQRFullscreen);
+            document.getElementById('qrOverlayClose').addEventListener('click', function(e) {
+                e.stopPropagation();
+                closeQRFullscreen();
+            });
+            
+            // Escape-tangent för att stänga overlay
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('qrOverlay').style.display === 'flex') {
+                    closeQRFullscreen();
+                }
+            });
+            
+            // Enter key support
+            document.getElementById('amount').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') generateQR();
+            });
+            
+            document.getElementById('message').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') generateQR();
+            });
+            
+            showStatus('🏒 BIK Karlskoga kassasystem redo!', 'success');
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BIK Karlskoga - Café Kassa & Swish QR</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
