@@ -382,7 +382,7 @@
         
         .qr-result {
             text-align: center;
-            margin-top: 15px;
+            margin: 15px 0;
             padding: 15px;
             border: 2px dashed #ddd;
             border-radius: 10px;
@@ -395,7 +395,7 @@
         
         @media (min-width: 769px) {
             .qr-result {
-                margin-top: 20px;
+                margin: 20px 0;
                 padding: 20px;
             }
         }
@@ -653,6 +653,18 @@
         <div class="section">
             <h2>📱 Swish QR-kod</h2>
             
+            <!-- QR-RESULTAT FLYTTAT ÖVERST -->
+            <div class="qr-result" id="qrContainer">
+                <h3>Swish QR-kod:</h3>
+                <div id="qrcode">
+                    <img id="qrImage" class="qr-image" style="display: none;" alt="Swish QR-kod">
+                </div>
+                <div class="swish-data" id="swishData"></div>
+                <button class="btn btn-secondary" id="downloadBtn" style="margin-top: 15px;">
+                    📱 Visa QR Fullskärm
+                </button>
+            </div>
+            
             <div class="qr-form">
                 <div class="form-group">
                     <label for="swishNumber">Swish-nummer:</label>
@@ -676,17 +688,6 @@
             </div>
             
             <div class="status" id="statusMsg"></div>
-            
-            <div class="qr-result" id="qrContainer">
-                <h3>Swish QR-kod:</h3>
-                <div id="qrcode">
-                    <img id="qrImage" class="qr-image" style="display: none;" alt="Swish QR-kod">
-                </div>
-                <div class="swish-data" id="swishData"></div>
-                <button class="btn btn-secondary" id="downloadBtn" style="margin-top: 15px;">
-                    📱 Visa QR Fullskärm
-                </button>
-            </div>
         </div>
     </div>
 
@@ -874,6 +875,13 @@
                     
                     document.getElementById('qrContainer').style.display = 'block';
                     showStatus(`✅ QR-kod för ${formattedAmount} SEK klar!`, 'success');
+                    
+                    // Scrolla till QR-koden som nu visas överst
+                    const qrContainer = document.getElementById('qrContainer');
+                    qrContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
                     
                     // Força en re-layout för att säkerställa responsivitet
                     setTimeout(() => {
